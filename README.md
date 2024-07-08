@@ -34,17 +34,17 @@ Individual states:
 * São Paulo: [geojson/br_states/br_sp.json](geojson/br_states/br_sp.json)
 
 
-## Running the GeoJson generator script
+## Running the GeoJson generator
 
 ### Pre-requisites
-* python 3.10
-* pipenv
+* go 1.22
 
-### Installing dependencies
-`pipenv install -d`
+### Running
+`go run main.go`
 
-### Running the script
-`pipenv run main`
+### Building
+`go build`
+then, the binary `geodata-br-states` will be created in the root directory
 
 ## Sources:
 * Estados do Brasil - [LAGEAMB - UFPR](https://geonode.paranagua.pr.gov.br/groups/group/lageamb_ufpr/activity/):  https://geonode.paranagua.pr.gov.br/layers/geonode:a__031_003_estadosBrasil
