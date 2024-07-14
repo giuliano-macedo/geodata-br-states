@@ -119,7 +119,7 @@ func fastCoshSinhDoubles(x float64) (xcosh, xsinh [4]float64) {
 	xsinh[1] = (ex4 - (1 / ex4)) / 2
 	xcosh[1] = (ex4 + (1 / ex4)) / 2
 
-	ex6 := ex2 * ex2 * ex2
+	ex6 := ex4 * ex2
 
 	xsinh[2] = (ex6 - (1 / ex6)) / 2
 	xcosh[2] = (ex6 + (1 / ex6)) / 2
