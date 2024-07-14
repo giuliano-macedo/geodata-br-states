@@ -47,8 +47,8 @@ func BenchmarkConversor(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		var (
-			e = rng.NormFloat64()*variation + baseE
-			n = rng.NormFloat64()*variation + baseN
+			e = rng.NormFloat64()*variation*baseE + baseE
+			n = rng.NormFloat64()*variation*baseN + baseN
 		)
 
 		brConversor.ProjectedToGeographic(e, n)
