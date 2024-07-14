@@ -3,6 +3,7 @@ package conversor_test
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"testing"
 
 	"github.com/giuliano-oliveira/geodata-br-states/internal/conversor"
@@ -33,5 +34,23 @@ func TestConversor(t *testing.T) {
 				t.Fatalf("expected (%v, %v) got (%v, %v). errs: (%v, %v)", tc.lat, tc.lng, lat, lng, errX, errY)
 			}
 		})
+	}
+}
+
+func BenchmarkConversor(b *testing.B) {
+	brConversor := conversor.NewConversor(&prj.BrazilCs, prj.WgsSphere)
+
+	rng := rand.New(rand.NewSource(42))
+
+	baseE, baseN := -1254473.4447543642, 8873047.5070001
+	variation := 0.5 / 100
+
+	for i := 0; i < b.N; i++ {
+		var (
+			e = rng.NormFloat64()*variation + baseE
+			n = rng.NormFloat64()*variation + baseN
+		)
+
+		brConversor.ProjectedToGeographic(e, n)
 	}
 }
