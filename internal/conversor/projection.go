@@ -18,10 +18,7 @@ type ProjectionConstants struct {
 	fn       float64
 	k_0      float64
 	m_0      float64
-	h_1      float64
-	h_2      float64
-	h_3      float64
-	h_4      float64
+	hs       [4]float64
 }
 
 func ComputeProjectionConstants(cs *prj.CoordinateSystem) *ProjectionConstants {
@@ -34,10 +31,12 @@ func ComputeProjectionConstants(cs *prj.CoordinateSystem) *ProjectionConstants {
 		n4    = n2 * n2
 		bigB  = (sc.a / (1 + n)) * (1 + (n2 / 4) + (n4 / 64.0))
 
-		h_1 = n/2.0 - ((2.0 / 3.0) * n2) + ((37.0 / 96.0) * n3) - ((1.0 / 360.0) * n4)
-		h_2 = ((1.0 / 48.0) * n2) + ((1.0 / 15.0) * n3) - ((437.0 / 1440.0) * n4)
-		h_3 = ((17.0 / 480.0) * n3) - ((37.0 / 840.0) * n4)
-		h_4 = (4397.0 / 161280.0) * n4
+		hs = [4]float64{
+			n/2.0 - ((2.0 / 3.0) * n2) + ((37.0 / 96.0) * n3) - ((1.0 / 360.0) * n4),
+			((1.0 / 48.0) * n2) + ((1.0 / 15.0) * n3) - ((437.0 / 1440.0) * n4),
+			((17.0 / 480.0) * n3) - ((37.0 / 840.0) * n4),
+			(4397.0 / 161280.0) * n4,
+		}
 	)
 
 	return &ProjectionConstants{
@@ -49,10 +48,7 @@ func ComputeProjectionConstants(cs *prj.CoordinateSystem) *ProjectionConstants {
 		k_0:      cs.ScaleFactor,
 		bigB:     bigB,
 		m_0:      computeM0(phi_0, bigB, sc.e, n),
-		h_1:      h_1,
-		h_2:      h_2,
-		h_3:      h_3,
-		h_4:      h_4,
+		hs:       hs,
 	}
 }
 
@@ -65,17 +61,24 @@ func (pc *ProjectionConstants) ProjectedToGeographic(E, N float64) (p, l float64
 		nu    = (E - pc.fe) / (pc.bigB * pc.k_0)
 		gamma = ((N - pc.fn) + (pc.k_0 * pc.m_0)) / (pc.bigB * pc.k_0)
 
-		gamma_1 = pc.h_1 * math.Sin(2*gamma) * math.Cosh(2*nu)
-		gamma_2 = pc.h_2 * math.Sin(4*gamma) * math.Cosh(4*nu)
-		gamma_3 = pc.h_3 * math.Sin(6*gamma) * math.Cosh(6*nu)
-		gamma_4 = pc.h_4 * math.Sin(8*gamma) * math.Cosh(8*nu)
-		gamma_0 = (gamma) - (gamma_1 + gamma_2 + gamma_3 + gamma_4)
+		gammaCos, gammaSin = fastCosSinDoubles(gamma)
+		nuCosh, nuSinh     = fastCoshSinhDoubles(nu)
 
-		nu_1 = pc.h_1 * math.Cos(2*gamma) * math.Sinh(2*nu)
-		nu_2 = pc.h_2 * math.Cos(4*gamma) * math.Sinh(4*nu)
-		nu_3 = pc.h_3 * math.Cos(6*gamma) * math.Sinh(6*nu)
-		nu_4 = pc.h_4 * math.Cos(8*gamma) * math.Sinh(8*nu)
-		nu_0 = (nu) - (nu_1 + nu_2 + nu_3 + nu_4)
+		gammas = [4]float64{
+			pc.hs[0] * gammaSin[0] * nuCosh[0],
+			pc.hs[1] * gammaSin[1] * nuCosh[1],
+			pc.hs[2] * gammaSin[2] * nuCosh[2],
+			pc.hs[3] * gammaSin[3] * nuCosh[3],
+		}
+		gamma_0 = (gamma) - (gammas[0] + gammas[1] + gammas[2] + gammas[3])
+
+		nus = [4]float64{
+			pc.hs[0] * gammaCos[0] * nuSinh[0],
+			pc.hs[1] * gammaCos[1] * nuSinh[1],
+			pc.hs[2] * gammaCos[2] * nuSinh[2],
+			pc.hs[3] * gammaCos[3] * nuSinh[3],
+		}
+		nu_0 = (nu) - (nus[0] + nus[1] + nus[2] + nus[3])
 
 		beta          = math.Asin(math.Sin(gamma_0) / math.Cosh(nu_0))
 		q_prime_prime = computeQ(beta, pc.sc.e)
