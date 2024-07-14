@@ -50,6 +50,19 @@ func (sc *SphereConstants) GeographicToCartesian(p, l, h float64) (x, y, z float
 	return
 }
 
+// resulting p,l will be in rad
+func (sc *SphereConstants) CartesianToGeographic2d(x, y, z float64) (p, l float64) {
+	// reference: Geomatics Guidance Note number 7, part 2 - 4.1.1 (ESPG9602)
+	var (
+		pp = math.Sqrt((x * x) + (y * y))
+		q  = math.Atan((z * sc.a) / (pp * sc.b))
+	)
+
+	p = math.Atan2((z + (sc.eta * sc.b * sinCubed(q))), (pp - (sc.e2 * sc.a * cosCubed(q))))
+	l = math.Atan2(y, x)
+	return
+}
+
 // resulting p,l,h will be in rad
 func (sc *SphereConstants) CartesianToGeographic(x, y, z float64) (p, l, h float64) {
 	// reference: Geomatics Guidance Note number 7, part 2 - 4.1.1 (ESPG9602)

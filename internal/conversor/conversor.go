@@ -29,7 +29,7 @@ func (c Conversor) ProjectedToGeographic(E, N float64) (lat, lng float64) {
 
 	// TODO: Implement EPSG1031 Geocentric translations (3-parameter) by x+=dx; y+=dy; z+=dz, each projection conversion pair has its own dx,dy,dz
 
-	p, l, _ = c.destSc.CartesianToGeographic(x, y, z)
+	p, l = c.destSc.CartesianToGeographic2d(x, y, z)
 
 	return RadToDeg(p), RadToDeg(l)
 }
