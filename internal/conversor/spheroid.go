@@ -41,11 +41,16 @@ func ComputeSphereConstants(sphere prj.Spheroid) *SphereConstants {
 // p,l,h must be in rad
 func (sc *SphereConstants) GeographicToCartesian(p, l, h float64) (x, y, z float64) {
 	// reference: Geomatics Guidance Note number 7, part 2 - 4.1.1 (ESPG9602)
-	nu := sc.a / math.Sqrt(1-(sc.e2*sinSqrd(p)))
+	var (
+		sinP  = math.Sin(p)
+		sinP2 = sinP * sinP
+		cosP  = math.Cos(p)
+		nu    = sc.a / math.Sqrt(1-(sc.e2*sinP2))
+	)
 
-	x = (nu + h) * math.Cos(p) * math.Cos(l)
-	y = (nu + h) * math.Cos(p) * math.Sin(l)
-	z = ((1 - sc.e2) * (nu + h)) * math.Sin(p)
+	x = (nu + h) * cosP * math.Cos(l)
+	y = (nu + h) * cosP * math.Sin(l)
+	z = ((1 - sc.e2) * (nu + h)) * sinP
 
 	return
 }
