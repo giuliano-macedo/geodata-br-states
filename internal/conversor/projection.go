@@ -55,6 +55,7 @@ func ComputeProjectionConstants(cs *prj.CoordinateSystem) *ProjectionConstants {
 // resulting p,l will be in rad
 func (pc *ProjectionConstants) ProjectedToGeographic(E, N float64) (p, l float64) {
 	// reference: Geomatics Guidance Note number 7, part 2 - 3.5.3.1 (EPSG9808)
+	// latex: https://gist.github.com/giuliano-macedo/006349278c4b6aaea13207291126182d
 	// Using JHS reverse formulas
 
 	var (
