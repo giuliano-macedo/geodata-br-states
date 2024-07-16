@@ -2,21 +2,6 @@ package conversor
 
 import "math"
 
-func sinSqrd(x float64) float64 {
-	ans := math.Sin(x)
-	return ans * ans
-}
-
-func sinCubed(x float64) float64 {
-	ans := math.Sin(x)
-	return ans * ans * ans
-}
-
-func cosCubed(x float64) float64 {
-	ans := math.Cos(x)
-	return ans * ans * ans
-}
-
 const (
 	piRatio        = 180 / math.Pi
 	inversePiRatio = math.Pi / 180
@@ -45,14 +30,13 @@ func DegToRad(x float64) float64 {
 //		math.Sin(8*x),
 //	}
 //
-// such that only 4 trig functions are computed, instead of 8.
+// such that only 1 trig function is computed, instead of 8.
 // reference: https://trans4mind.com/personal_development/mathematics/trigonometry/multipleAnglesRecursiveFormula.htm#Recursive_Formula
 func fastCosSinDoubles(x float64) (xcos, xsin [4]float64) {
 	var (
-		sinx  = math.Sin(x)
-		sin2x = math.Sin(2 * x)
-		cosx  = math.Cos(x)
-		cos2x = math.Cos(2 * x)
+		sinx, cosx = math.Sincos(x)
+		sin2x      = 2 * sinx * cosx
+		cos2x      = (cosx * cosx) - (sinx * sinx)
 	)
 
 	//2x

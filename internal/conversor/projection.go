@@ -81,18 +81,20 @@ func (pc *ProjectionConstants) ProjectedToGeographic(E, N float64) (p, l float64
 		}
 		nu_0 = (nu) - (nus[0] + nus[1] + nus[2] + nus[3])
 
-		beta          = math.Asin(math.Sin(gamma_0) / math.Cosh(nu_0))
-		q_prime_prime = computeQ(beta, pc.sc.e)
+		beta             = math.Asin(math.Sin(gamma_0) / math.Cosh(nu_0))
+		sinbeta, cosbeta = math.Sincos(beta)
+
+		q_prime_prime = computeQ(sinbeta/cosbeta, pc.sc.e)
 	)
 
 	p = math.Atan(math.Sinh(q_prime_prime))
-	l = pc.lambda_0 + (math.Asin(math.Tanh(nu_0) / math.Cos(beta)))
+	l = pc.lambda_0 + (math.Asin(math.Tanh(nu_0) / cosbeta))
 
 	return
 }
 
-func computeQ(beta, e float64) float64 {
-	Q := math.Asinh(math.Tan(beta))
+func computeQ(tanbeta, e float64) float64 {
+	Q := math.Asinh(tanbeta)
 	Qnext := Q
 	er := 1e-13
 	for i := 0; i < 1000; i++ {
