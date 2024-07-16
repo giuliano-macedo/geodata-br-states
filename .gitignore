@@ -1,1 +1,3 @@
 /geodata-br-states
+*.test
+*.out
